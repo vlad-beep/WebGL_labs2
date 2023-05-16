@@ -52,7 +52,7 @@ function ShaderProgram(name, program) {
  * (Note that the use of the above drawPrimitive function is not an efficient
  * way to draw with WebGL.  Here, the geometry is so simple that it doesn't matter.)
  */
-function draw() {
+function draw(POV) {
   gl.clearColor(0, 0, 0, 1);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -75,7 +75,7 @@ function draw() {
   gl.uniformMatrix4fv(shProgram.iModelViewProjectionMatrix, false, modelViewProjection);
 
   /* Draw the six faces of a cube, with different colors. */
-  gl.uniform4fv(shProgram.iColor, [0, 1, 0, 1]);
+  gl.uniform4fv(shProgram.iColor, [1, 1, 1, 1]);
 
   surface.Draw();
 }

@@ -6,11 +6,7 @@
 
 
     <title>PA#1</title>
-    <style>
-        body {
-            background-color: #EEEEEE;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 
     <script src="./Utils/trackball-rotator.js"></script>
     <script src="./Utils/m4.js"></script>
@@ -20,15 +16,38 @@
 </head>
 
 <body onload="init()">
+    <div class="sidebar">
+        <h2>Controls</h2>
+        <p>Eye separation</p>
+        <div class="slider-container">
+            <input type="range" min="0" max="100" value="50" class="slider">
+        </div>
+        <p>Field of View</p>
+        <div class="slider-container">
+            <input type="range" min="0" max="100" value="25" class="slider">
+        </div>
+        <p>Near Clippingn</p>
+        <div class="slider-container">
+            <input type="range" min="0" max="100" value="75" class="slider">
+        </div>
+        <p>Convergence</p>
+        <div class="slider-container">
+            <input type="range" min="0" max="100" value="75" class="slider">
+        </div>
+        <p>Enable camera</p>
+        <label class="toggle" for="myToggle">
+            <input class="toggle__input" name="" type="checkbox" id="myToggle">
+            <div class="toggle__fill"></div>
+        </label>
+    </div>
+    <div class="content">
+        <p id="message">Bachynskyi Vladyslav TR-22mp PA1<br>
+            (Virich Cyclic Surface)</p>
 
-    <h2>A Cube with "Trackball" Mouse Rotation</h2>
 
-    <p id="message">Bachynskyi Vladyslav TR-22mp PA1<br>
-        (Virich Cyclic Surface)</p>
-
-
-    <div id="canvas-holder">
-        <canvas width="1000" height="1000" id="webglcanvas" style="background-color:red"></canvas>
+        <div id="canvas-holder">
+            <canvas width=900 height=900 id="webglcanvas" style="background-color:red"></canvas>
+        </div>
     </div>
 
 
