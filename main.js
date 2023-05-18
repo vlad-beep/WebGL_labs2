@@ -4,6 +4,28 @@ let gl; // The webgl context.
 let surface; // A surface model
 let shProgram; // A shader program
 let spaceball; // A SimpleRotator object that lets the user rotate the view by mouse.
+let stereoCamera;
+const eyeSeparationSlider = document.getElementById('Eye_separation');
+const fieldOfViewSlider = document.getElementById('Field_of_View');
+
+const nearClippingSlider = document.getElementById('Near_Clipping');
+const convergenceSlider = document.getElementById('Convergence');
+
+eyeSeparationSlider.addEventListener('input', stereoCam);
+fieldOfViewSlider.addEventListener('input', handleSliderChange);
+
+function stereoCam() {
+  stereoCamera.eyeSeparation = parseFloat(eyeSeparationSlider.value);
+  drawBoth();
+  console.log(stereoCamera);
+}
+
+function handleSliderChange(event) {
+  const sliderId = event.target.id;
+  const sliderValue = event.target.value;
+
+  console.log(`Slider ${sliderId} value: ${sliderValue}`);
+}
 
 function deg2rad(angle) {
   return (angle * Math.PI) / 180;
@@ -48,6 +70,34 @@ function ShaderProgram(name, program) {
   };
 }
 
+function LeftPOV(stereoCamera) {
+  const { eyeSeparation, convergence, aspectRatio, fov, near, far } = stereoCamera;
+  const top = near * Math.tan(fov / 2);
+  const bottom = -top;
+
+  const a = aspectRatio * Math.tan(fov / 2) * convergence;
+  const b = a - eyeSeparation / 2;
+  const c = a + eyeSeparation / 2;
+
+  const left = (-b * near) / convergence;
+  const right = (c * near) / convergence;
+
+  return m4.frustum(left, right, bottom, top, near, far);
+}
+function RightPOV(stereoCamera) {
+  const { eyeSeparation, convergence, aspectRatio, fov, near, far } = stereoCamera;
+  const top = near * Math.tan(fov / 2);
+  const bottom = -top;
+
+  const a = aspectRatio * Math.tan(fov / 2) * convergence;
+  const b = a - eyeSeparation / 2;
+  const c = a + eyeSeparation / 2;
+
+  const left = (-c * near) / convergence;
+  const right = (b * near) / convergence;
+  return m4.frustum(left, right, bottom, top, near, far);
+}
+
 /* Draws a colored cube, along with a set of coordinate axes.
  * (Note that the use of the above drawPrimitive function is not an efficient
  * way to draw with WebGL.  Here, the geometry is so simple that it doesn't matter.)
@@ -55,9 +105,16 @@ function ShaderProgram(name, program) {
 function draw(POV) {
   gl.clearColor(0, 0, 0, 1);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
+  gl.clear(gl.DEPTH_BUFFER_BIT);
+  let projection;
   /* Set the values of the projection transformation */
-  let projection = m4.perspective(Math.PI / 2, 1, 4, 24);
+  if (POV === 'Left') {
+    gl.colorMask(true, false, false, true);
+    projection = LeftPOV(stereoCamera);
+  } else {
+    gl.colorMask(false, true, true, true);
+    projection = RightPOV(stereoCamera);
+  }
 
   /* Get the view matrix from the SimpleRotator object.*/
   let modelView = spaceball.getViewMatrix();
@@ -78,6 +135,13 @@ function draw(POV) {
   gl.uniform4fv(shProgram.iColor, [1, 1, 1, 1]);
 
   surface.Draw();
+}
+
+function drawBoth() {
+  gl.colorMask(false, true, true, true);
+  draw('Right');
+  gl.colorMask(true, false, false, true);
+  draw('Left');
 }
 
 function CreateSurfaceData() {
@@ -137,6 +201,18 @@ function initGL() {
 
   surface = new Model('Surface');
   surface.BufferData(CreateSurfaceData());
+
+  const ap = gl.canvas.width / gl.canvas.height;
+
+  stereoCamera = {
+    eyeSeparation: 0.004,
+    convergence: 1,
+    aspectRatio: ap,
+    fov: deg2rad(100),
+    near: 3,
+    far: 20,
+  };
+  console.log(stereoCamera);
 
   gl.enable(gl.DEPTH_TEST);
 }
@@ -198,5 +274,5 @@ function init() {
 
   spaceball = new TrackballRotator(canvas, draw, 0);
 
-  draw();
+  drawBoth();
 }
