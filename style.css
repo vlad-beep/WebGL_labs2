@@ -86,6 +86,7 @@ canvas{
 }
 
 .active{
+  position: relative;
   background:none;
 }
   

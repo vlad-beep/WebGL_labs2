@@ -37,20 +37,20 @@ navigator.mediaDevices
   .catch((error) => {
     console.error('Error accessing user media', error);
   });
+
 eyeSeparationSlider.addEventListener('input', stereoCam);
-fieldOfViewSlider.addEventListener('input', handleSliderChange);
+fieldOfViewSlider.addEventListener('input', stereoCam);
+convergenceSlider.addEventListener('input', stereoCam);
+nearClippingSlider.addEventListener('input', stereoCam);
 
 function stereoCam() {
-  stereoCamera.eyeSeparation = parseFloat(eyeSeparationSlider.value);
   drawBoth();
+  stereoCamera.eyeSeparation = parseFloat(eyeSeparationSlider.value);
+  stereoCamera.convergence = parseFloat(convergenceSlider.value);
+  stereoCamera.fov = deg2rad(parseFloat(fieldOfViewSlider.value));
+  stereoCamera.nearClipping = parseFloat(nearClippingSlider.value);
+
   console.log(stereoCamera);
-}
-
-function handleSliderChange(event) {
-  const sliderId = event.target.id;
-  const sliderValue = event.target.value;
-
-  console.log(`Slider ${sliderId} value: ${sliderValue}`);
 }
 
 function deg2rad(angle) {
@@ -97,31 +97,31 @@ function ShaderProgram(name, program) {
 }
 
 function LeftPOV(stereoCamera) {
-  const { eyeSeparation, convergence, aspectRatio, fov, near, far } = stereoCamera;
-  const top = near * Math.tan(fov / 2);
+  const { eyeSeparation, convergence, aspectRatio, fov, nearClipping, far } = stereoCamera;
+  const top = nearClipping * Math.tan(fov / 2);
   const bottom = -top;
 
   const a = aspectRatio * Math.tan(fov / 2) * convergence;
   const b = a - eyeSeparation / 2;
   const c = a + eyeSeparation / 2;
 
-  const left = (-b * near) / convergence;
-  const right = (c * near) / convergence;
+  const left = (-b * nearClipping) / convergence;
+  const right = (c * nearClipping) / convergence;
 
-  return m4.frustum(left, right, bottom, top, near, far);
+  return m4.frustum(left, right, bottom, top, nearClipping, far);
 }
 function RightPOV(stereoCamera) {
-  const { eyeSeparation, convergence, aspectRatio, fov, near, far } = stereoCamera;
-  const top = near * Math.tan(fov / 2);
+  const { eyeSeparation, convergence, aspectRatio, fov, nearClipping, far } = stereoCamera;
+  const top = nearClipping * Math.tan(fov / 2);
   const bottom = -top;
 
   const a = aspectRatio * Math.tan(fov / 2) * convergence;
   const b = a - eyeSeparation / 2;
   const c = a + eyeSeparation / 2;
 
-  const left = (-c * near) / convergence;
-  const right = (b * near) / convergence;
-  return m4.frustum(left, right, bottom, top, near, far);
+  const left = (-c * nearClipping) / convergence;
+  const right = (b * nearClipping) / convergence;
+  return m4.frustum(left, right, bottom, top, nearClipping, far);
 }
 
 /* Draws a colored cube, along with a set of coordinate axes.
@@ -231,14 +231,13 @@ function initGL() {
   const ap = gl.canvas.width / gl.canvas.height;
 
   stereoCamera = {
-    eyeSeparation: 0.004,
+    eyeSeparation: 0.05,
     convergence: 1,
     aspectRatio: ap,
     fov: deg2rad(100),
-    near: 3,
+    nearClipping: 4,
     far: 20,
   };
-  console.log(stereoCamera);
 
   gl.enable(gl.DEPTH_TEST);
 }
