@@ -297,8 +297,6 @@ function init() {
       '<p>Sorry, could not initialize the WebGL graphics context: ' + e + '</p>';
     return;
   }
-
-  spaceball = new TrackballRotator(canvas, draw, 0);
-
+  spaceball = new TrackballRotator(canvas, drawBoth, 0);
   drawBoth();
 }
