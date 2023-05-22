@@ -68,6 +68,26 @@ canvas {
   .sidebar p{
     margin-left: 20px;
  }
+
+ .videoElement{
+  position: absolute;
+  display: none;
+ 
+ }
+
+ .videoElement.active {
+  position: absolute;
+  display: block;
+}
+
+canvas{
+  position: relative;
+  background:black;
+}
+
+.active{
+  background:none;
+}
   
   /* Styling for the main content */
   .content {

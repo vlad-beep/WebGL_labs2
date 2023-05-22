@@ -5,12 +5,38 @@ let surface; // A surface model
 let shProgram; // A shader program
 let spaceball; // A SimpleRotator object that lets the user rotate the view by mouse.
 let stereoCamera;
+
 const eyeSeparationSlider = document.getElementById('Eye_separation');
 const fieldOfViewSlider = document.getElementById('Field_of_View');
-
 const nearClippingSlider = document.getElementById('Near_Clipping');
 const convergenceSlider = document.getElementById('Convergence');
+const toggleInput = document.getElementById('myToggle');
+const videoElement = document.querySelector('video');
+const canvasElement = document.querySelector('canvas');
+const videoElementHolder = document.querySelector('.videoElement');
 
+// Add an event listener to the toggle input
+toggleInput.addEventListener('change', function () {
+  if (this.checked) {
+    // Activate the video
+    videoElementHolder.classList.add('active');
+    canvasElement.classList.add('active');
+  } else {
+    // Deactivate the video
+    videoElementHolder.classList.remove('active');
+    canvasElement.classList.remove('active');
+  }
+});
+
+navigator.mediaDevices
+  .getUserMedia({ video: true })
+  .then((stream) => {
+    videoElement.srcObject = stream;
+    videoElement.play();
+  })
+  .catch((error) => {
+    console.error('Error accessing user media', error);
+  });
 eyeSeparationSlider.addEventListener('input', stereoCam);
 fieldOfViewSlider.addEventListener('input', handleSliderChange);
 
@@ -104,7 +130,7 @@ function RightPOV(stereoCamera) {
  */
 function draw(POV) {
   gl.clearColor(0, 0, 0, 1);
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.clear(gl.DEPTH_BUFFER_BIT);
   let projection;
   /* Set the values of the projection transformation */
