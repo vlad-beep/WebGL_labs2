@@ -135,10 +135,10 @@ function draw(POV) {
   let projection;
   /* Set the values of the projection transformation */
   if (POV === 'Left') {
-    gl.colorMask(true, false, false, true);
+    gl.colorMask(false, true, true, true);
     projection = LeftPOV(stereoCamera);
   } else {
-    gl.colorMask(false, true, true, true);
+    gl.colorMask(true, false, false, true);
     projection = RightPOV(stereoCamera);
   }
 
@@ -164,9 +164,7 @@ function draw(POV) {
 }
 
 function drawBoth() {
-  gl.colorMask(false, true, true, true);
   draw('Right');
-  gl.colorMask(true, false, false, true);
   draw('Left');
 }
 
