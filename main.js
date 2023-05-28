@@ -5,6 +5,7 @@ let surface; // A surface model
 let shProgram; // A shader program
 let spaceball; // A SimpleRotator object that lets the user rotate the view by mouse.
 let stereoCamera;
+let rotationMatrix;
 
 const eyeSeparationSlider = document.getElementById('Eye_separation');
 const fieldOfViewSlider = document.getElementById('Field_of_View');
@@ -150,6 +151,9 @@ function draw(POV) {
 
   let matAccum0 = m4.multiply(rotateToPointZero, modelView);
   let matAccum1 = m4.multiply(translateToPointZero, matAccum0);
+  if (rotationMatrix) {
+    matAccum1 = m4.multiply(matAccum1, rotationMatrix);
+  }
 
   /* Multiply the projection matrix times the modelview matrix to give the
        combined transformation matrix, and send that to the shader program. */
