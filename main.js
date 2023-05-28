@@ -295,5 +295,19 @@ function init() {
     return;
   }
   spaceball = new TrackballRotator(canvas, drawBoth, 0);
+
+    if ("Magnetometer" in window) {
+      const sensor = new Magnetometer({ frequency: 60 });
+      sensor.addEventListener("reading", () => {
+        const yAxisRotation = Math.atan2(sensor.x, sensor.z);
+        rotationMatrix = m4.yRotation(yAxisRotation);
+
+        draw();
+      });
+      sensor.start();
+
+    } else {
+      console.error("Magnetometer is not in window");
+    }
   drawBoth();
 }
