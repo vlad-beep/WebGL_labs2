@@ -306,7 +306,7 @@ function init() {
         const yAxisRotation = Math.atan2(sensor.x, sensor.z);
         rotationMatrix = m4.yRotation(yAxisRotation);
 
-        draw();
+        drawBoth();
       });
       sensor.start();
 
