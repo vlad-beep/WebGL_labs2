@@ -303,8 +303,14 @@ function init() {
     if ("Magnetometer" in window) {
       const sensor = new Magnetometer({ frequency: 60 });
       sensor.addEventListener("reading", () => {
-        const yAxisRotation = Math.atan2(sensor.x, sensor.z);
-        rotationMatrix = m4.yRotation(yAxisRotation);
+        const rotationX = Math.atan2(sensor.y, sensor.z);
+        const rotationY = Math.atan2(sensor.x, sensor.z);
+        const rotationZ = Math.atan2(sensor.y, sensor.x);
+        const mX = m4.xRotation(rotationX);
+        const mY = m4.yRotation(rotationY);
+        const mZ = m4.zRotation(rotationZ);
+        const acc = m4.multiply(mX, mY);
+        rotationMatrix = m4.multiply(acc, mZ);
 
         drawBoth();
       });
