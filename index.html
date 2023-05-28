@@ -49,6 +49,15 @@
         </div>
     </div>
 
+  <script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function() {
+      navigator.serviceWorker.register("/WebGL_labs2/service-worker.js")
+        .catch(console.log);
+    });
+  } 
+  </script>
+
     <script src="./Utils/trackball-rotator.js"></script>
     <script src="./Utils/m4.js"></script>
     <script src="./shader.gpu"></script>
