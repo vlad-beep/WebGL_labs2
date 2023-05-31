@@ -6,6 +6,8 @@ let shProgram; // A shader program
 let spaceball; // A SimpleRotator object that lets the user rotate the view by mouse.
 let stereoCamera;
 let rotationMatrix;
+let vertices = CreateSurfaceData();
+let sphereVertices = createSphereData();
 
 const eyeSeparationSlider = document.getElementById('Eye_separation');
 const fieldOfViewSlider = document.getElementById('Field_of_View');
@@ -29,15 +31,15 @@ toggleInput.addEventListener('change', function () {
   }
 });
 
-navigator.mediaDevices
-  .getUserMedia({ video: true })
-  .then((stream) => {
-    videoElement.srcObject = stream;
-    videoElement.play();
-  })
-  .catch((error) => {
-    console.error('Error accessing user media', error);
-  });
+// navigator.mediaDevices
+//   .getUserMedia({ video: true })
+//   .then((stream) => {
+//     videoElement.srcObject = stream;
+//     videoElement.play();
+//   })
+//   .catch((error) => {
+//     console.error('Error accessing user media', error);
+//   });
 
 eyeSeparationSlider.addEventListener('input', stereoCam);
 fieldOfViewSlider.addEventListener('input', stereoCam);
@@ -58,25 +60,45 @@ function deg2rad(angle) {
   return (angle * Math.PI) / 180;
 }
 
+function createSphereData() {
+  const topOffset = 1.2;
+  const radius = 0.15;
+  const slices = 16;
+  const stacks = 16;
+  const vertices = [];
+
+  for(let stackNumber = 0; stackNumber <= stacks; stackNumber++) {
+    const theta = stackNumber * Math.PI / stacks;
+    const nextTheta = (stackNumber + 1) * Math.PI / stacks;
+
+    for(let sliceNumber = 0; sliceNumber <= slices; sliceNumber++) {
+      const phi = sliceNumber * 2 * Math.PI / slices;
+      const nextPhi = (sliceNumber + 1) * 2 * Math.PI / slices;
+      const x1 = radius * Math.sin(theta) * Math.cos(phi);
+      const y1 = radius * Math.cos(theta);
+      const z1 = radius * Math.sin(theta) * Math.sin(phi);
+      const x2 = radius * Math.sin(nextTheta) * Math.cos(nextPhi);
+      const y2 = radius * Math.cos(nextTheta);
+      const z2 = radius * Math.sin(nextTheta) * Math.sin(nextPhi);
+
+      vertices.push(x1, y1 + topOffset, z1);
+      vertices.push(x2, y2 + topOffset, z2);
+    }
+  }
+
+  return vertices;
+}
+
 // Constructor
 function Model(name) {
   this.name = name;
   this.iVertexBuffer = gl.createBuffer();
-  this.count = 0;
 
-  this.BufferData = function (vertices) {
+  this.BufferData = function () {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.iVertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STREAM_DRAW);
-
-    this.count = vertices.length / 3;
-  };
-
-  this.Draw = function () {
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.iVertexBuffer);
     gl.vertexAttribPointer(shProgram.iAttribVertex, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(shProgram.iAttribVertex);
-
-    gl.drawArrays(gl.LINE_STRIP, 0, this.count);
   };
 }
 
@@ -164,7 +186,7 @@ function draw(POV) {
   /* Draw the six faces of a cube, with different colors. */
   gl.uniform4fv(shProgram.iColor, [1, 1, 1, 1]);
 
-  surface.Draw();
+  gl.drawArrays(gl.LINE_STRIP, 0, vertices.length / 3);
 }
 
 function drawBoth() {
