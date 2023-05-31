@@ -52,8 +52,6 @@ function stereoCam() {
   stereoCamera.convergence = parseFloat(convergenceSlider.value);
   stereoCamera.fov = deg2rad(parseFloat(fieldOfViewSlider.value));
   stereoCamera.nearClipping = parseFloat(nearClippingSlider.value);
-
-  console.log(stereoCamera);
 }
 
 function deg2rad(angle) {
@@ -61,8 +59,8 @@ function deg2rad(angle) {
 }
 
 function createSphereData() {
-  const topOffset = 1.2;
-  const radius = 0.15;
+  const offset = 3.2;
+  const radius = 0.5;
   const slices = 16;
   const stacks = 16;
   const vertices = [];
@@ -81,8 +79,8 @@ function createSphereData() {
       const y2 = radius * Math.cos(nextTheta);
       const z2 = radius * Math.sin(nextTheta) * Math.sin(nextPhi);
 
-      vertices.push(x1, y1 + topOffset, z1);
-      vertices.push(x2, y2 + topOffset, z2);
+      vertices.push(x1 + offset, y1 + offset, z1 + offset);
+      vertices.push(x2 + offset, y2 + offset, z2 + offset);
     }
   }
 
@@ -96,7 +94,7 @@ function Model(name) {
 
   this.BufferData = function () {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.iVertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STREAM_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices.concat(sphereVertices)), gl.STREAM_DRAW);
     gl.vertexAttribPointer(shProgram.iAttribVertex, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(shProgram.iAttribVertex);
   };
@@ -187,6 +185,7 @@ function draw(POV) {
   gl.uniform4fv(shProgram.iColor, [1, 1, 1, 1]);
 
   gl.drawArrays(gl.LINE_STRIP, 0, vertices.length / 3);
+  gl.drawArrays(gl.LINE_STRIP, vertices.length / 3, sphereVertices.length / 3);
 }
 
 function drawBoth() {
