@@ -59,7 +59,7 @@ function deg2rad(angle) {
 }
 
 function createSphereData() {
-  const offset = 3.2;
+  const offset = 2.2;
   const radius = 0.5;
   const slices = 16;
   const stacks = 16;
