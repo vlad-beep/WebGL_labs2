@@ -382,7 +382,7 @@ function init() {
         const acc = m4.multiply(mX, mY);
         rotationMatrix = m4.multiply(acc, mZ);
         if (window.setAudioPosition) {
-        setAudioPosition(mX, mY, mZ);
+        setAudioPosition(rotationX, rotationY, rotationZ);
       }
 
         drawBoth();
