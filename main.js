@@ -20,17 +20,17 @@ const canvasElement = document.querySelector('canvas');
 const videoElementHolder = document.querySelector('.videoElement');
 
 // Add an event listener to the toggle input
-toggleInput.addEventListener('change', function () {
-  if (this.checked) {
-    // Activate the video
-    videoElementHolder.classList.add('active');
-    canvasElement.classList.add('active');
-  } else {
-    // Deactivate the video
-    videoElementHolder.classList.remove('active');
-    canvasElement.classList.remove('active');
-  }
-});
+// toggleInput.addEventListener('change', function () {
+//   if (this.checked) {
+//     // Activate the video
+//     videoElementHolder.classList.add('active');
+//     canvasElement.classList.add('active');
+//   } else {
+//     // Deactivate the video
+//     videoElementHolder.classList.remove('active');
+//     canvasElement.classList.remove('active');
+//   }
+// });
 
 // navigator.mediaDevices
 //   .getUserMedia({ video: true })
@@ -60,7 +60,7 @@ function deg2rad(angle) {
 }
 
 function createSphereData() {
-  const offset = 2.2;
+  const offset = 3.2;
   const radius = 0.5;
   const slices = 16;
   const stacks = 16;
