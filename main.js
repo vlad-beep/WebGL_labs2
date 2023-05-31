@@ -304,7 +304,7 @@ function createProgram(gl, vShader, fShader) {
 
 async function initAudio() {
   const audioContext = new AudioContext();
-  const decodedAudioData = await fetch("/music.mp3")
+  const decodedAudioData = await fetch("/remove-me-2/music.mp3")
     .then(response => response.arrayBuffer())
     .then(audioData => audioContext.decodeAudioData(audioData));
   const source = audioContext.createBufferSource();
