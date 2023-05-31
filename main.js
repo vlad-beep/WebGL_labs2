@@ -8,6 +8,7 @@ let stereoCamera;
 let rotationMatrix;
 let vertices = CreateSurfaceData();
 let sphereVertices = createSphereData();
+const audio = {};
 
 const eyeSeparationSlider = document.getElementById('Eye_separation');
 const fieldOfViewSlider = document.getElementById('Field_of_View');
@@ -301,6 +302,49 @@ function createProgram(gl, vShader, fShader) {
   return prog;
 }
 
+async function initAudio() {
+  const audioContext = new AudioContext();
+  const decodedAudioData = await fetch("/music.mp3")
+    .then(response => response.arrayBuffer())
+    .then(audioData => audioContext.decodeAudioData(audioData));
+  const source = audioContext.createBufferSource();
+  source.buffer = decodedAudioData;
+  source.connect(audioContext.destination);
+  source.start();
+  while(audioContext.state === "suspended") {
+    await new Promise(resolve => window.setTimeout(resolve, 2000));
+    audioContext.resume();
+  }
+  const panner = audioContext.createPanner();
+  const volume = audioContext.createGain();
+  volume.connect(panner);
+  const highpass = audioContext.createBiquadFilter();
+  highpass.type = "highpass";
+  highpass.frequency.value = 500;
+
+  audio.panner = panner;
+  audio.context = audioContext;
+  audio.filter = highpass;
+  audio.source = source;
+  source.connect(highpass);
+
+  window.setAudioPosition = (x, y, z) => {
+    panner.positionX.value = x;
+    panner.positionY.value = y;
+    panner.positionZ.value = z;
+  }
+
+  const toggle = document.querySelector("#toggleFilter");
+
+  toggle.onchange = e => {
+    if (e.target.checked) {
+      audio.filter.connect(audioContext.destination);
+    } else {
+      audio.filter.disconnect();
+    }
+  }
+}
+
 /**
  * initialization function that will be called when the page has loaded
  */
@@ -346,4 +390,5 @@ function init() {
       console.error("Magnetometer is not in window");
     }
   drawBoth();
+  initAudio();
 }
